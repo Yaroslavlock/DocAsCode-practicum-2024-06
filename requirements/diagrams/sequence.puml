@@ -1,0 +1,17 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+' Контейнер модуля создания нового продукта
+Container_Boundary(newProductModule, "Модуль создания нового продукта") {
+    Component(productManager, "Product Manager", "Spring Service", "Управляет процессом добавления нового блюда в меню")
+    Component(ingredientChecker, "Ingredient Checker", "Spring Service", "Проверяет наличие всех ингредиентов для нового продукта на складе")
+    Component(marketingCampaignManager, "Marketing Campaign Manager", "Spring Service", "Создает и управляет рекламными кампаниями для нового продукта")
+    Component(newProductApi, "New Product API", "REST API", "Обеспечивает взаимодействие с другими системами для обновления данных о продукте")
+    Component(databaseRepository, "Database Repository", "JPA Repository", "Хранит данные о новых продуктах")
+}
+
+' Взаимодействие компонентов
+Rel(productManager, databaseRepository, "Сохраняет данные о новом продукте", "JPA")
+Rel(ingredientChecker, inventorySystem, "Запрашивает данные о запасах ингредиентов", "REST API")
+Rel(marketingCampaignManager, marketingSystem, "Запускает рекламную кампанию", "REST API")
+Rel(newProductApi, orderSystem, "Информирует систему заказов о новом продукте", "REST API")
+@enduml
