@@ -10,7 +10,7 @@ info:
 
 servers:
   - url: https://api.sunrise-sunset.org
-    description: Production server
+    description: Production serversssss
 
 paths:
   /json:
@@ -21,7 +21,7 @@ paths:
       parameters:
         - name: lat
           in: query
-          description: "Latitude in decimal degrees."
+          description: "Latitude in decimal degreesss."
           required: true
           schema:
             type: number
