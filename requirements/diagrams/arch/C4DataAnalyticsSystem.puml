@@ -1,0 +1,14 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(dataAnalyticsSystem, "Система аналитики данных") {
+    Component(eventCollector, "Event Collector", "Spark Service", "Собирает данные о событиях")
+    Component(dataProcessor, "Data Processor", "Python Service", "Обрабатывает данные для аналитики")
+    Component(analyticsApi, "Analytics API", "REST API", "Предоставляет интерфейс для получения аналитики")
+    Component(eventListener, "Event Listener", "Kafka Consumer", "Подписывается на все ключевые события")
+
+    Rel(eventListener, eventCollector, "Собирает события")
+    Rel(eventCollector, dataProcessor, "Передает данные для обработки")
+    Rel(dataProcessor, analyticsApi, "Обеспечивает доступ к аналитическим данным")
+}
+@enduml

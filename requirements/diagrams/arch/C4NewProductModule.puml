@@ -1,0 +1,18 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(newProductModule, "Модуль создания нового продукта") {
+    Component(productManager, "Product Manager", "Spring Service", "Управляет созданием новых продуктов")
+    Component(ingredientChecker, "Ingredient Checker", "Spring Service", "Проверяет наличие ингредиентов через события")
+    Component(marketingCampaignTrigger, "Marketing Campaign Trigger", "Spring Service", "Запускает рекламные кампании")
+    Component(eventPublisher, "Event Publisher", "Kafka Producer", "Публикует события ProductCreated")
+    Component(newProductApi, "New Product API", "REST API", "Интерфейс для работы с модулем")
+    Component(securityMonitor, "Security Monitor", "Spring Service", "Логирует действия пользователей и аномалии")
+
+    Rel(productManager, ingredientChecker, "Запрашивает проверку ингредиентов")
+    Rel(productManager, marketingCampaignTrigger, "Передает данные для кампаний")
+    Rel(productManager, eventPublisher, "Публикует событие ProductCreated")
+    Rel(newProductApi, productManager, "Передает запросы от пользователей")
+    Rel(securityMonitor, newProductApi, "Мониторит действия пользователей")
+}
+@enduml

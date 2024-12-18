@@ -1,0 +1,16 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(warehouseSystem, "Система управления складом") {
+    Component(stockChecker, "Stock Checker", "Java Service", "Проверяет наличие ингредиентов")
+    Component(stockUpdater, "Stock Updater", "Java Service", "Обновляет данные о запасах")
+    Component(warehouseApi, "Warehouse API", "REST API", "Предоставляет интерфейс для управления складом")
+    Component(eventPublisher, "Event Publisher", "Kafka Producer", "Публикует события InventoryUpdated")
+    Component(eventListener, "Event Listener", "Kafka Consumer", "Подписывается на события ProductCreated")
+
+    Rel(warehouseApi, stockChecker, "Передает запросы на проверку запасов")
+    Rel(stockChecker, stockUpdater, "Передает данные о запасах")
+    Rel(stockUpdater, eventPublisher, "Публикует обновления о запасах")
+    Rel(eventListener, stockChecker, "Запрашивает проверку ингредиентов")
+}
+@enduml

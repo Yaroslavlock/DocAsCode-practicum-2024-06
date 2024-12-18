@@ -1,0 +1,53 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+' Централизованный брокер событий
+Boundary(EventBroker, "Event Broker (Kafka / RabbitMQ)", "Централизованный брокер событий") {
+  ContainerQueue(ProductCreatedQueue, "ProductCreated Queue", "Kafka Topic", "Хранение событий создания продуктов")
+  ContainerQueue(ProductUpdatedQueue, "ProductUpdated Queue", "Kafka Topic", "Хранение событий обновления продуктов")
+  ContainerQueue(OrderPlacedQueue, "OrderPlaced Queue", "Kafka Topic", "Хранение событий заказов")
+  ContainerQueue(InventoryUpdatedQueue, "InventoryUpdated Queue", "Kafka Topic", "Хранение событий обновления запасов")
+  ContainerQueue(CampaignLaunchedQueue, "CampaignLaunched Queue", "Kafka Topic", "Хранение событий маркетинговых кампаний")
+}
+
+System_Boundary(system, "Система закусочных") {
+    Container(newProductModule, "Модуль создания нового продукта", "Spring Boot", "Публикует события ProductCreated и ProductUpdated. Реализует шифрование сообщений.")
+    Container(orderSystem, "Система управления заказами", "Spring Boot", "Обрабатывает заказы и подписывается на события InventoryUpdated и OrderPlaced.")
+    Container(inventorySystem, "Система управления складом", "Java", "Подписывается на ProductCreated, ProductUpdated. Публикует события InventoryUpdated.")
+    Container(productionSystem, "Система управления производством", "Java", "Подписывается на OrderPlaced. Управляет процессом приготовления блюд.")
+    Container(marketingSystem, "Маркетинговая система", "Java", "Подписывается на ProductCreated. Публикует события CampaignLaunched.")
+    Container(dataAnalyticsSystem, "Система аналитики данных", "Spark / Python", "Подписывается на ProductCreated, ProductUpdated, OrderPlaced, InventoryUpdated, CampaignLaunched.")
+    Container(securitySystem, "Система безопасности", "Микросервисы", "Отслеживает аномалии, управляет доступом и регистрирует события.")
+}
+
+Rel(newProductModule, ProductCreatedQueue, "Публикация событий ProductCreated", "Шифрование через TLS")
+Rel(newProductModule, ProductUpdatedQueue, "Публикация событий ProductUpdated", "Шифрование через TLS")
+
+Rel(ProductCreatedQueue, inventorySystem, "Подписка на ProductCreated", "Декодирование событий")
+Rel(ProductUpdatedQueue, inventorySystem, "Подписка на ProductUpdated", "Декодирование событий")
+Rel(ProductCreatedQueue, marketingSystem, "Подписка на ProductCreated", "Использование ACL")
+Rel(ProductCreatedQueue, dataAnalyticsSystem, "Подписка на ProductCreated", "Использование ACL")
+Rel(ProductUpdatedQueue, dataAnalyticsSystem, "Подписка на ProductUpdated", "Использование ACL")
+
+Rel(inventorySystem, InventoryUpdatedQueue, "Публикация событий InventoryUpdated", "Гарантия доставки")
+Rel(InventoryUpdatedQueue, orderSystem, "Подписка на InventoryUpdated", "Учет доступных ингредиентов")
+
+Rel(orderSystem, OrderPlacedQueue, "Публикация событий OrderPlaced", "TLS и аутентификация")
+Rel(OrderPlacedQueue, productionSystem, "Подписка на OrderPlaced", "Запуск приготовления блюд")
+Rel(OrderPlacedQueue, dataAnalyticsSystem, "Подписка на OrderPlaced", "Сбор данных о заказах")
+
+Rel(marketingSystem, CampaignLaunchedQueue, "Публикация событий CampaignLaunched", "Шифрование через TLS")
+Rel(CampaignLaunchedQueue, dataAnalyticsSystem, "Подписка на CampaignLaunched", "Использование ACL")
+
+Rel(securitySystem, EventBroker, "Мониторинг событий", "Логирование и анализ")
+
+Boundary(SecurityLayer, "Слой безопасности", "Policy") {
+    Component(SecurityPolicies, "Политики доступа", "RBAC/ACL", "Управление доступом к событиям")
+    Component(EncryptionService, "Служба шифрования", "AES-256", "Шифрование всех сообщений")
+}
+
+Rel(SecurityPolicies, EventBroker, "Применение политик доступа", "Настройка ACL")
+Rel(EncryptionService, EventBroker, "Шифрование сообщений", "TLS, AES-256")
+
+System_Ext(SystemUsers, "Пользователи системы", "Бизнес-пользователи", "Используют данные аналитики и управления продуктами")
+Rel(SystemUsers, dataAnalyticsSystem, "Запрос аналитических данных", "Через интерфейс данных")
+@enduml

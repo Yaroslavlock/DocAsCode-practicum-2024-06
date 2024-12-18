@@ -1,0 +1,14 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(securitySystem, "Система безопасности") {
+    Component(securityMonitor, "Security Monitor", "Spring Service", "Отслеживает аномалии и действия пользователей")
+    Component(eventListener, "Event Listener", "Kafka Consumer", "Подписывается на события из других систем")
+    Component(auditLogger, "Audit Logger", "Spring Service", "Логирует действия пользователей")
+    Component(securityApi, "Security API", "REST API", "Предоставляет интерфейс для управления безопасностью")
+
+    Rel(eventListener, securityMonitor, "Передает события для анализа")
+    Rel(securityMonitor, auditLogger, "Логирует действия пользователей")
+    Rel(securityApi, securityMonitor, "Предоставляет доступ к данным безопасности")
+}
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(orderSystem, "Система управления заказами") {
+    Component(orderProcessor, "Order Processor", "Spring Service", "Обрабатывает заказы")
+    Component(menuUpdater, "Menu Updater", "Spring Service", "Обновляет меню при изменении событий")
+    Component(orderApi, "Order API", "REST API", "Предоставляет интерфейс для управления заказами")
+    Component(eventListener, "Event Listener", "Kafka Consumer", "Подписывается на события InventoryUpdated")
+
+    Rel(orderApi, orderProcessor, "Передает данные о заказах")
+    Rel(orderProcessor, menuUpdater, "Инициирует обновление меню")
+    Rel(eventListener, menuUpdater, "Передает события для обновления меню")
+}
+@enduml

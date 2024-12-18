@@ -1,0 +1,14 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(marketingSystem, "Маркетинговая система") {
+    Component(campaignManager, "Campaign Manager", "Java Service", "Управляет рекламными кампаниями")
+    Component(eventListener, "Event Listener", "Kafka Consumer", "Подписывается на события ProductCreated")
+    Component(campaignApi, "Campaign API", "REST API", "Предоставляет интерфейс для управления кампаниями")
+    Component(eventPublisher, "Event Publisher", "Kafka Producer", "Публикует события CampaignLaunched")
+
+    Rel(eventListener, campaignManager, "Передает данные о новых продуктах")
+    Rel(campaignManager, eventPublisher, "Публикует события о запуске кампаний")
+    Rel(campaignApi, campaignManager, "Управляет кампаниями через API")
+}
+@enduml
