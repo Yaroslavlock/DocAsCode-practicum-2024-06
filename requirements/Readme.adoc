@@ -43,8 +43,8 @@
 
 Использование Confluence для документирования.
 
-Ссылка на проект:
-Проект доступен по внутренней ссылке для участников команды.
+Ссылка на проект:https://zamysel.atlassian.net/jira/software/projects/ZMSL/boards/1/backlog
+
 
 
 
